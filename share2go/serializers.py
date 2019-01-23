@@ -48,5 +48,5 @@ class NoteSerializer(serializers.ModelSerializer):
         instance=Note.objects.create(creator=creator,note_text=note_text)
         print(receiver)
         # return Notes.objects.create(**validated_data)
-        return instance.receiver.add(receiver[User][id])
-    
+        instance.receiver.set(receiver)
+        return instance

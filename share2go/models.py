@@ -36,7 +36,7 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
     def __str__(self):
-        return self.user.username
+        return "{} ,{}".format(self.user.id,self.user.username)
     
 
 class Note(models.Model):
