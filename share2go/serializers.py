@@ -26,27 +26,31 @@ from .models import Profile,Note
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Profile
-        fields=['username','bio','avatar']
+        model=User
+        fields=['id', 'username', 'first_name']
         
 
 class NoteSerializer(serializers.ModelSerializer):
     creator=serializers.HiddenField(default=serializers.CurrentUserDefault())
+    #   receiver=serializers.ProfileSerializer(source='Profile.user.')
+    receiver_details=UserSerializer(source='receiver', read_only=True, many=True)
+
+    # receiver=serializers.CharField(source='Note.receiver.user.username', read_only=True)
+
     read_only_fields=['creator']
+
     class Meta:
         model=Note
-        fields=['receiver','note_text','creator']
-
-
+        fields=['receiver','note_text','creator','receiver_details']
+    
     def create(self,validated_data):
-        # validated_data['user'] = self.request.user
-        # return super(PhotoListAPIView, self).create(validated_data)
+        
         receiver=validated_data.get('receiver')
+
         creator=validated_data.get('creator')
         note_text=validated_data.get('note_text')
-        
         instance=Note.objects.create(creator=creator,note_text=note_text)
-        print(receiver)
-        # return Notes.objects.create(**validated_data)
+        
         instance.receiver.set(receiver)
         return instance
+

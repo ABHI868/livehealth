@@ -2,8 +2,8 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 
@@ -44,6 +44,7 @@ class Note(models.Model):
     note_text=models.TextField(max_length=1000)
     receiver=models.ManyToManyField(User,related_name='note_receiver',blank=True)
 
+
     def __str__(self):
         return self.creator
 
@@ -58,6 +59,12 @@ class Note(models.Model):
 # def save_user(sender,instance,**kwargs):
 #     instance.save()
 
+def create_profile(sender, **kwargs):
+    if kwargs['created']:
+        profile=Profile.objects.create(user=kwargs['instance'])
+
+
+post_save.connect(create_profile,sender=User)
 
 
 
