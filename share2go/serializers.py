@@ -1,55 +1,39 @@
 
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
 from .models import Profile,Note
 
+
+
 # class UserSerializer(serializers.ModelSerializer):
-#     email=serializers.EmailField(required=True,
-#     validators=[UniqueValidator(queryset=User.objects.all())]
-#     )
-
-#     username=serializers.CharField(required=True,
-#     validators=[UniqueValidator(queryset=User.objects.all())]
-
-#     password=serializers.CharField(required=True,
-#     max_length=12)
-
-#     def create(self, validated_data):
-#         user = User.objects.create_user(validated_data['username'], validated_data['email'],
-#             validated_data['password'])
-#         return user
-
 #     class Meta:
-#         model = User
-#         fields = ('id', 'username', 'email', 'password')
-
+#         model=User
+#         fields=['id', 'username', 'first_name']
+        
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=['id', 'username', 'first_name']
-        
 
 class NoteSerializer(serializers.ModelSerializer):
-    creator=serializers.HiddenField(default=serializers.CurrentUserDefault())
-    #   receiver=serializers.ProfileSerializer(source='Profile.user.')
+    # creator=ser ializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator=UserSerializer(default=serializers.CurrentUserDefault())
     receiver_details=UserSerializer(source='receiver', read_only=True, many=True)
-
-    # receiver=serializers.CharField(source='Note.receiver.user.username', read_only=True)
-
-    read_only_fields=['creator']
+    # read_only_fields=['creator']
 
     class Meta:
         model=Note
-        fields=['receiver','note_text','creator','receiver_details']
+        fields='__all__'
     
     def create(self,validated_data):
         
         receiver=validated_data.get('receiver')
-
+        
         creator=validated_data.get('creator')
-        note_text=validated_data.get('note_text')
-        instance=Note.objects.create(creator=creator,note_text=note_text)
+        # creator=validated_data(serializers.CurrentUserDefault().usernam)
+        note_title=validated_data.get('note_title')
+        note_description=validated_data['note_description']
+        instance=Note.objects.create(creator=creator,note_title=note_title,note_description=note_description)
         
         instance.receiver.set(receiver)
         return instance

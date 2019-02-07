@@ -21,10 +21,9 @@ class NoteCreateView(generics.CreateAPIView):
     #     receiver=self.kwargs['username']
 
 class NoteListView(generics.ListAPIView):
-    permisson_classes=[IsAuthenticatedOrReadOnly]
+    #permisson_classes=[IsAuthenticatedOrReadOnly]
+    permisson_classes=None
     serializer_class=NoteSerializer
-    # x=Profile.objects.get(user=username)
-    # print(x)
     queryset=Note.objects.all()
 
     def get_queryset(self):
